@@ -1,84 +1,108 @@
-# B A M E S
 
-## Descrição
+# **B A M E S**
 
-O bames é um projeto focado atualmente em estudos de arquitetura, design e testes.
-####  Como o negócio é voltado 100% ao Brasil, o projeto é desenvolvido em português.
+## **Descrição**
 
-## Arquitetura
+O **BAMES** é um projeto focado em estudos de arquitetura de software, design de sistemas e testes. Atualmente, o projeto está sendo desenvolvido com um foco específico no Brasil, e, por isso, a documentação e o desenvolvimento seguem a linguagem portuguesa.
 
-A arquitetura do projeto é baseada em sistemas distribuídos, com comunicação assíncrona e orientada a eventos. A comunicação entre os serviços é feita através de mensageria, utilizando o RabbitMQ como broker.
-O projeto é composto por 3 camadas principais: `Aplicacao`, `Dominio` e `Infraestrutura`.
+## **Arquitetura**
 
-## Design
+O projeto segue uma arquitetura baseada em sistemas distribuídos, utilizando comunicação assíncrona. A comunicação entre os serviços é realizada por meio de mensageria, com o **RabbitMQ** atuando como broker.
 
-O design do projeto é baseado em DDD (Domain Driven Design), com a separação de responsabilidades entre as camadas de aplicação, domínio e infraestrutura.
+### **Camadas da Arquitetura**
+O projeto é dividido em três camadas principais:
+- **Aplicação**: Responsável pela lógica de negócio e pela interação com o usuário.
+- **Domínio**: Onde residem as regras de negócio e os agregados do sistema.
+- **Infraestrutura**: Onde ficam os detalhes de implementação, como comunicação entre serviços, persistência de dados e integração com outros sistemas.
 
-## Testes
+## **Design**
 
-O projeto está sendo desenvolvido utilizando o Pest como framework de testes.
-A Cobertura de testes pode ser visualizada [aqui - Coverage](https://19950512.github.io/bames).
+O design do projeto segue os princípios do **Domain Driven Design (DDD)**, promovendo uma separação clara de responsabilidades entre as camadas **Aplicação**, **Domínio** e **Infraestrutura**. Isso facilita a manutenção, escalabilidade e evolução do sistema.
 
+## **Testes**
 
-## Tecnologias
+O projeto utiliza o **Pest** como framework de testes, oferecendo uma sintaxe simples e intuitiva para escrever testes automatizados.
 
-- PHP 8.3
-- Docker Compose
-- Postgresql
-- Redis
-- Nginx
-- Firebase JWT
-- RabbitMQ
-- Flutter
+### **Cobertura de Testes**
+A cobertura de testes do projeto pode ser visualizada diretamente na página [Coverage](https://19950512.github.io/bames).
 
+## **Tecnologias Utilizadas**
 
-## Como rodar os testes Coverage
+O **BAMES** é construído utilizando as seguintes tecnologias:
+- **PHP 8.3**: Versão atual do PHP utilizada no projeto.
+- **Docker Compose**: Utilizado para orquestrar os containers e facilitar o ambiente de desenvolvimento.
+- **PostgreSQL**: Banco de dados relacional utilizado para armazenamento de dados.
+- **Redis**: Utilizado como cache e broker de mensagens.
+- **Nginx**: Servidor web utilizado para balanceamento de carga e proxy reverso.
+- **Firebase JWT**: Para autenticação e controle de acesso via tokens JWT.
+- **RabbitMQ**: Broker de mensagens utilizado para comunicação assíncrona entre os serviços.
+- **Flutter**: Framework utilizado para o desenvolvimento de aplicativos móveis.
 
-Executou
+## **Como Rodar os Testes e Visualizar a Cobertura**
+
+Para rodar os testes e verificar a cobertura, execute o seguinte comando:
 ```bash
 composer coverage
 ```
 
-Saída
-![ERROR  No code coverage driver is available.](assets/coverage_not-installed.png)
-
-
-Seu PHP8.3 não têm o xdebug instalado
-```bash
-apt install php8.3-xdebug
+### **Problema Comum**
+Caso você encontre o seguinte erro:
 ```
-
-Agora, precisa adicionar esse conteúdo no arquivo `php.ini` se for linux, deve estar em `/etc/php/8.3/cli/php.ini`
-```conf
-[xdebug]
-zend_extension=xdebug.so
-xdebug.mode=coverage
-xdebug.start_with_request=yes
+ERROR: No code coverage driver is available.
 ```
+Isso indica que o **xdebug** não está instalado ou configurado corretamente.
 
-Coloque o `xdebug.mode` como `coverage` para que o composer covarege funcione
+### **Resolução**
 
-## Documentação das APIs
+1. **Instalar o xdebug para PHP 8.3**:
+    ```bash
+    apt install php8.3-xdebug
+    ```
 
-#### Para atualizar a documentação
+2. **Configurar o xdebug no PHP**:
+    - No seu sistema **Linux**, edite o arquivo `php.ini` localizado em `/etc/php/8.3/cli/php.ini`.
+    - Adicione as seguintes linhas no final do arquivo:
+    ```conf
+    [xdebug]
+    zend_extension=xdebug.so
+    xdebug.mode=coverage
+    xdebug.start_with_request=yes
+    ```
+
+3. **Reiniciar o servidor PHP**:
+    Após a configuração, reinicie o servidor PHP para aplicar as mudanças.
+
+Agora, a cobertura de testes deve funcionar corretamente.
+
+## **Documentação das APIs**
+
+### **Atualizando a Documentação**
+Para atualizar a documentação das APIs, execute o comando abaixo:
 ```bash
 npx @redocly/cli build-docs src/Infraestrutura/APIs/Autenticacao/doc.yaml -o doc-api-auth.html --title API - Auth
 ```
 
-Links das documentações
+### **Links das Documentações**
+- [API Auth](doc-api-auth.html)
 
-[API Auth](doc-api-auth.html)
+## **Dependências**
 
-### Dependencias
+### **Doc2PDF**
+O projeto utiliza a ferramenta **unoconv** para converter arquivos DOCX em PDF. Para instalar as dependências necessárias, execute os seguintes comandos:
 
-##### Doc2pdf
-```bash
-# unoconv para converter arquivos docx para pdf e libreoffice para unoconv funcionar
-sudo apt install libreoffice
-sudo apt install unoconv
-```
+1. **Instalar o LibreOffice e o unoconv**:
+    ```bash
+    sudo apt install libreoffice
+    sudo apt install unoconv
+    ```
 
-```bash
-sudo /usr/bin/doc2pdf --headless -o /tmp/doc2pdf.pdf /path/to/documento.docx
-```
+2. **Converter arquivos DOCX para PDF**:
+    Após a instalação, você pode usar o comando abaixo para realizar a conversão:
+    ```bash
+    sudo /usr/bin/doc2pdf --headless -o /tmp/doc2pdf.pdf /path/to/documento.docx
+    ```
 
+---
+
+### Considerações Finais
+Esse documento tem como objetivo fornecer informações claras e diretas sobre o projeto **BAMES**, suas tecnologias, arquitetura e como colaborar com os testes e documentação. O projeto está em constante evolução, e qualquer contribuição é bem-vinda!
