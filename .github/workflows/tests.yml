@@ -1,0 +1,65 @@
+name: Run PHP Tests with Pest
+
+on:
+  push:
+    branches:
+      - main       # Deploy para produção
+      - develop    # Deploy para staging
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Verifica o código do repositório
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
+      # Configura o Docker no ambiente
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+  
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          extensions: mbstring, pdo, curl # Adicione outras extensões PHP que seu projeto precisa
+
+      # Configura o cache das dependências do Composer
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.composer/cache
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      # Atualiza as dependências do Composer localmente
+      - name: Install dependencies locally
+        run: composer install --prefer-dist --no-progress
+
+      # Instala o Pest
+      - name: Install Pest
+        run: composer require pestphp/pest --dev
+
+      # Rodar os testes com Pest
+      - name: Run tests with Pest
+        run: vendor/bin/pest --coverage
+        env:
+          XDEBUG_MODE: coverage  # Habilitar cobertura de código, se necessário
+
+      # Envia notificação ao Discord (Sucesso nos testes)
+      - name: Notify success
+        if: success()
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{"content": "✅ Todos os testes passaram com sucesso!"}' \
+          ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      # Envia notificação ao Discord (Falha nos testes)
+      - name: Notify failure
+        if: failure()
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d "{\"content\": \"❌ Alguns testes falharam. Verifique os logs!\"}" \
+          ${{ secrets.DISCORD_WEBHOOK_URL }}

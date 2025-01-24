@@ -2,6 +2,8 @@ name: Build and Deploy PHP with Docker Compose
 
 on:
   push:
+    tags:
+      - 'v*'   # Isso faz com que a pipeline dispare somente para commits com tags que comecem com 'v'
     branches:
       - main       # Deploy para produção
       - develop    # Deploy para staging
