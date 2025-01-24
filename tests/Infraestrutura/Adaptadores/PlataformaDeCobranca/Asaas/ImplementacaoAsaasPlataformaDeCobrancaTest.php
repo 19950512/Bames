@@ -63,4 +63,4 @@ test('Deverá emitir um boleto', function () {
         contaBancariaAmbienteProducao: false,
     );
     expect($this->asaas->emitirBoleto($parametroBoleto))->toBeInstanceOf(SaidaFronteiraEmitirBoleto::class);
-})->group('PlataformaDeCobranca', 'Asaas');
+})->group('PlataformaDeCobranca', 'Asaas')->skip('Informe seu ClientID e Chave de API para testar');

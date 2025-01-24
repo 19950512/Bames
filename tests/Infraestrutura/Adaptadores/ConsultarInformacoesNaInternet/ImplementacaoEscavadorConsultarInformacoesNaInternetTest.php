@@ -28,7 +28,9 @@ test('Deverá ser possível consultar informações na internet', function () {
 
     expect($response)->toBeInstanceOf(SaidaFronteiraConsultarCPF::class);
 
-})->group('EscavadorConsultaInformacoesNaInternet', 'ConsultaCPF');
+})->group('EscavadorConsultaInformacoesNaInternet', 'ConsultaCPF')
+->skip('Descomente o código para testar a consulta de CPF na internet.');
+
 
 
 test('Deverá larnçar um erro com CPF inválido', function () {
@@ -49,4 +51,5 @@ test('Deverá larnçar um erro com CPF inválido', function () {
     $implementacaoEscavadorConsultarInformacoesNaInternet->consultarCPF($cpf);
 })
     ->throws('Erro ao consultar CPF na API Brasil:')
-    ->group('EscavadorConsultaInformacoesNaInternet', 'ConsultaCPF');
+    ->group('EscavadorConsultaInformacoesNaInternet', 'ConsultaCPF')
+    ->skip('Descomente o código para testar a consulta de CPF na internet.');
