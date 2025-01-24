@@ -1,0 +1,57 @@
+{
+    "id": "evt_05b708f961d739ea7eba7e4db318f621&7761645",
+    "event": "PAYMENT_CREATED",
+    "dateCreated": "2024-11-15 08:09:19",
+    "payment": {
+        "object": "payment",
+        "id": "{{codigo_boleto_na_plataforma}}",
+        "dateCreated": "2024-11-15",
+        "customer": "cus_000006350698",
+        "installment": "{{codigo_cobranca_na_plataforma}}",
+        "paymentLink": null,
+        "value": 484.34,
+        "netValue": 483.35,
+        "originalValue": null,
+        "interestValue": null,
+        "description": "Parcela 3 de 3. Este boleto refere-se a uma das parcelas da cobrança, que inclui: \nPublicações e Livros -  - R$: 78\nMaterial Promocional - Algum item ai - R$: 897\nElaboração de Pareceres Jurídicos - É o Judaz - R$: 478",
+        "billingType": "BOLETO",
+        "canBePaidAfterDueDate": true,
+        "pixTransaction": null,
+        "status": "PENDING",
+        "dueDate": "2025-01-27",
+        "originalDueDate": "2025-01-27",
+        "paymentDate": null,
+        "clientPaymentDate": null,
+        "installmentNumber": 3,
+        "invoiceUrl": "https:\/\/sandbox.asaas.com\/i\/ypbjh88hwo91pyu2",
+        "invoiceNumber": "07000677",
+        "externalReference": null,
+        "deleted": false,
+        "anticipated": false,
+        "anticipable": false,
+        "creditDate": null,
+        "estimatedCreditDate": null,
+        "transactionReceiptUrl": null,
+        "nossoNumero": "10362065",
+        "bankSlipUrl": "https:\/\/sandbox.asaas.com\/b\/pdf\/ypbjh88hwo91pyu2",
+        "lastInvoiceViewedDate": null,
+        "lastBankSlipViewedDate": null,
+        "discount": {
+            "value": 0,
+            "limitDate": null,
+            "dueDateLimitDays": 0,
+            "type": "FIXED"
+        },
+        "fine": {
+            "value": 2,
+            "type": "PERCENTAGE"
+        },
+        "interest": {
+            "value": 1,
+            "type": "PERCENTAGE"
+        },
+        "postalService": false,
+        "custody": null,
+        "refunds": null
+    }
+}

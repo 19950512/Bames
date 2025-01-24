@@ -1,0 +1,110 @@
+openapi: 3.0.0
+info:
+  title: Documentação da API de Autenticação e Cadastro de Empresa
+  version: 1.0.0
+paths:
+  /empresas:
+    post:
+      summary: Cadastrar nova empresa
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome_fantasia:
+                  type: string
+                  description: Nome fantasia da empresa
+                oab:
+                  type: string
+                  description: Número da OAB do responsável
+                numero_documento:
+                  type: string
+                  description: Número do documento da empresa (CNPJ ou CPF)
+                responsavel_nome_completo:
+                  type: string
+                  description: Nome completo do responsável pela empresa
+                responsavel_email:
+                  type: string
+                  format: email
+                  description: E-mail do responsável pela empresa
+                responsavel_senha:
+                  type: string
+                  format: password
+                  description: Senha do responsável pela empresa, de no mínimo 8 caracteres a 50 caracteres
+              required:
+                - nome_fantasia
+                - oab
+                - numero_documento
+                - responsavel_nome_completo
+                - responsavel_email
+                - responsavel_senha
+      responses:
+        '201':
+          description: Empresa cadastrada com sucesso
+        '400':
+          description: Dados de entrada inválidos
+
+  /login:
+    post:
+      summary: Autenticar usuário
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: E-mail do usuário
+                senha:
+                  type: string
+                  format: password
+                  description: Senha do usuário
+              required:
+                - email
+                - senha
+      responses:
+        '201':
+          description: Access Token
+        '400':
+          description: Bad Request - Algum dado inválido
+        '401':
+          description: Unauthorized - E-mail ou senha inválidos ou usuário não encontrado ou inativo
+
+  /alterarsenha:
+    post:
+      summary: Alterar senha do usuário
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  format: token
+                  description: Token de autorização
+                senha:
+                  type: string
+                  format: password
+                  description: Senha do usuário
+                confirmacao_senha:
+                  type: string
+                  format: password
+                  description: Confirmação da senha do usuário
+              required:
+                - token
+                - senha
+                - confirmacao_senha
+      responses:
+        '201':
+          description: Senha alterada com sucesso
+        '400':
+          description: Bad Request - Algum dado inválido
+        '422':
+          description: Bad Request - Senha e confirmação de senha não conferem ou token inválido

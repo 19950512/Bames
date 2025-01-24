@@ -1,0 +1,126 @@
+name: Build and Deploy PHP with Docker Compose
+
+on:
+  push:
+    branches:
+      - main       # Deploy para produção
+      - develop    # Deploy para staging
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Verifica o código do repositório
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
+      # Instala o ggshield para verificação de segredos
+      - name: Install ggshield
+        run: pip install --user ggshield
+
+      # Verifica o repositório por segredos expostos
+      - name: Scan repository for secrets with ggshield
+        run: ~/.local/bin/ggshield scan repo .
+        env:
+          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+
+      # Configura o Docker no ambiente
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+  
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          extensions: mbstring, pdo, curl # Adicione outras extensões PHP que seu projeto precisa
+
+      # Configura o cache das dependências do Composer
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.composer/cache
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      # Atualiza as dependências do Composer localmente
+      - name: Install dependencies locally
+        run: composer install --prefer-dist --no-progress
+
+      # Configura a chave SSH
+      - name: Setup SSH Key
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # Adiciona o servidor ao arquivo known_hosts
+      - name: Setup SSH Host
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+
+      # Cria um backup antes do deploy
+      - name: Backup current version
+        run: |
+          ssh root@${{ secrets.SERVER_IP }} << 'EOF'
+            ls -l ${{ secrets.DEPLOY_PATH }}  # Listar o conteúdo do diretório
+            if [ -d "${{ secrets.DEPLOY_PATH }}" ] && [ "$(ls -A ${{ secrets.DEPLOY_PATH }})" ]; then
+              tar -czf ${{ secrets.BACKUP_PATH }}/php-$(date +%Y%m%d%H%M%S).tar.gz -C ${{ secrets.DEPLOY_PATH }} .
+            else
+              echo "Diretório não encontrado ou está vazio. Backup não realizado."
+              exit 1
+            fi
+          EOF
+        if: success()
+    
+      # Envia os arquivos para o servidor via SSH
+      - name: Deploy Docker containers to server via SSH
+        run: |
+          ssh root@${{ secrets.SERVER_IP }} << 'EOF'
+            cd ${{ secrets.DEPLOY_PATH }}
+            git restore .  # Desfaz alterações locais não comitadas
+            git pull origin main  # Puxa as últimas atualizações do repositório
+            composer update --no-progress --prefer-dist
+            docker compose -f ${{ secrets.DOCKER_COMPOSE_FILE }} up -d --build
+          EOF
+        if: success()
+
+      # Limpar cache do Cloudflare (CDN + DNS)
+      - name: Clear Cloudflare Cache (CDN + DNS)
+        run: |
+          curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
+          -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          -d '{"purge_everything":true}'
+
+      # Teste pós-deploy (Smoke Test)
+      - name: Post-deploy Smoke Test
+        run: |
+          curl -f http://${{ secrets.SERVER_IP }} || exit 1
+        if: success()
+
+      # Rollback em caso de falha
+      - name: Rollback to previous version
+        if: failure()
+        run: |
+          ssh root@${{ secrets.SERVER_IP }} << 'EOF'
+            latest_backup=$(ls -t ${{ secrets.BACKUP_PATH }}/php-*.tar.gz | head -n 1)
+            tar -xzf $latest_backup -C ${{ secrets.DEPLOY_PATH }}
+          EOF
+
+      # Envia notificação ao Discord (Sucesso)
+      - name: Notify success
+        if: success()
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{"content": "✅ Deploy realizado com sucesso no servidor ${{ secrets.SERVER_IP }}!"}' \
+          ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      # Envia notificação ao Discord (Falha)
+      - name: Notify failure
+        if: failure()
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d "{\"content\": \"❌ Deploy falhou. Verifique os logs!\"}" \
+          ${{ secrets.DISCORD_WEBHOOK_URL }}

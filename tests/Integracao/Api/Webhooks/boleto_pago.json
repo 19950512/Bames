@@ -1,0 +1,57 @@
+{
+    "id": "evt_d26e303b238e509335ac9ba210e51b0f&7686444",
+    "event": "PAYMENT_RECEIVED",
+    "dateCreated": "2024-11-06 18:59:27",
+    "payment": {
+        "object": "payment",
+        "id": "pay_6egmyz6lpfxazko3-mock",
+        "dateCreated": "2024-11-04",
+        "customer": "cus_000006326297",
+        "paymentLink": null,
+        "value": 42.23,
+        "netValue": 41.24,
+        "originalValue": null,
+        "interestValue": null,
+        "description": null,
+        "billingType": "BOLETO",
+        "canBePaidAfterDueDate": true,
+        "confirmedDate": "2024-11-06",
+        "pixTransaction": null,
+        "status": "RECEIVED",
+        "dueDate": "2024-11-09",
+        "originalDueDate": "2024-11-09",
+        "paymentDate": "2024-11-06",
+        "clientPaymentDate": "2024-11-06",
+        "installmentNumber": null,
+        "invoiceUrl": "https:\/\/sandbox.asaas.com\/i\/n6ic32hq5hr1xcr1",
+        "invoiceNumber": "06898322",
+        "externalReference": null,
+        "deleted": false,
+        "anticipated": false,
+        "anticipable": false,
+        "creditDate": "2024-11-06",
+        "estimatedCreditDate": "2024-11-06",
+        "transactionReceiptUrl": "https:\/\/sandbox.asaas.com\/comprovantes\/6723880153196283",
+        "nossoNumero": "10326944",
+        "bankSlipUrl": "https:\/\/sandbox.asaas.com\/b\/pdf\/n6ic32hq5hr1xcr1",
+        "lastInvoiceViewedDate": null,
+        "lastBankSlipViewedDate": null,
+        "discount": {
+            "value": 0,
+            "limitDate": null,
+            "dueDateLimitDays": 0,
+            "type": "FIXED"
+        },
+        "fine": {
+            "value": 0,
+            "type": "FIXED"
+        },
+        "interest": {
+            "value": 0,
+            "type": "PERCENTAGE"
+        },
+        "postalService": false,
+        "custody": null,
+        "refunds": null
+    }
+}

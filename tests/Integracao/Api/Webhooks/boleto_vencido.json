@@ -1,0 +1,56 @@
+{
+    "id": "evt_071da53af2a9613df04213d0157d6b88&7738166",
+    "event": "PAYMENT_OVERDUE",
+    "dateCreated": "2024-11-12 04:02:19",
+    "payment": {
+        "object": "payment",
+        "id": "pay_3rehzc5v12gqlbs8",
+        "dateCreated": "2024-11-05",
+        "customer": "cus_000006332997",
+        "paymentLink": null,
+        "value": 350,
+        "netValue": 349.01,
+        "originalValue": null,
+        "interestValue": null,
+        "description": null,
+        "billingType": "BOLETO",
+        "canBePaidAfterDueDate": true,
+        "pixTransaction": null,
+        "status": "OVERDUE",
+        "dueDate": "2024-11-10",
+        "originalDueDate": "2024-11-10",
+        "paymentDate": null,
+        "clientPaymentDate": null,
+        "installmentNumber": null,
+        "invoiceUrl": "https:\/\/sandbox.asaas.com\/i\/3rehzc5v12gqlbs8",
+        "invoiceNumber": "06905492",
+        "externalReference": null,
+        "deleted": false,
+        "anticipated": false,
+        "anticipable": false,
+        "creditDate": null,
+        "estimatedCreditDate": null,
+        "transactionReceiptUrl": null,
+        "nossoNumero": "10329026",
+        "bankSlipUrl": "https:\/\/sandbox.asaas.com\/b\/pdf\/3rehzc5v12gqlbs8",
+        "lastInvoiceViewedDate": null,
+        "lastBankSlipViewedDate": "2024-11-05T11:22:22Z",
+        "discount": {
+            "value": 0,
+            "limitDate": null,
+            "dueDateLimitDays": 0,
+            "type": "FIXED"
+        },
+        "fine": {
+            "value": 0,
+            "type": "FIXED"
+        },
+        "interest": {
+            "value": 0,
+            "type": "PERCENTAGE"
+        },
+        "postalService": false,
+        "custody": null,
+        "refunds": null
+    }
+}

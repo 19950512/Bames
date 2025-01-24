@@ -1,0 +1,179 @@
+services:
+  redis-master:
+    image: 'bitnami/redis:latest'
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT2}"
+    networks:
+      - bames_network
+    volumes:
+      - './docker/redis/data:/data'
+      - './docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro'
+    restart: always
+    command: redis-server /usr/local/etc/redis/redis.conf
+
+  discord-bot:
+    build: ./docker/php-fpm # Use o Dockerfile para construir a imagem
+    command: php src/Infraestrutura/Adaptadores/BotDiscord/index.php # Comando para iniciar o worker
+    volumes:
+      - './:/application' # Mapeie o código-fonte para o contêiner
+    deploy:
+      replicas: 1 # Número inicial de réplicas
+    networks:
+      - bames_network
+
+  laucher-queue:
+    build: ./docker/php-fpm # Use o Dockerfile para construir a imagem
+    command: php src/Infraestrutura/Adaptadores/Mensageria/InicializadorMensageria.php # Comando para iniciar o worker
+    volumes:
+      - './:/application' # Mapeie o código-fonte para o contêiner
+    depends_on:
+      - rabbitmq-master # Certifique-se de que o RabbitMQ esteja disponível antes de iniciar o worker
+    deploy:
+      replicas: 1 # Número inicial de réplicas
+    networks:
+      - bames_network
+
+  worker-email:
+    build: ./docker/php-fpm # Use o Dockerfile para construir a imagem
+    command: php src/Infraestrutura/Workers/Email/WorkerEmail.php # Comando para iniciar o worker
+    volumes:
+      - './:/application' # Mapeie o código-fonte para o contêiner
+    depends_on:
+      - laucher-queue
+      - rabbitmq-master # Certifique-se de que o RabbitMQ esteja disponível antes de iniciar o worker
+    deploy:
+      replicas: 2 # Número inicial de réplicas
+    networks:
+      - bames_network
+
+  worker-novo-evento:
+    build: ./docker/php-fpm # Use o Dockerfile para construir a imagem
+    command: php src/Infraestrutura/Workers/Agenda/NovoEvento/Worker.php # Comando para iniciar o worker
+    volumes:
+      - './:/application' # Mapeie o código-fonte para o contêiner
+    depends_on:
+      - laucher-queue
+      - rabbitmq-master # Certifique-se de que o RabbitMQ esteja disponível antes de iniciar o worker
+    deploy:
+      replicas: 2 # Número inicial de réplicas
+    networks:
+      - bames_network
+
+  worker-empresa-recem-cadastrada:
+    build: ./docker/php-fpm # Use o Dockerfile para construir a imagem
+    command: php src/Infraestrutura/Workers/EmpresaRecemCadastrada/Worker.php # Comando para iniciar o worker
+    volumes:
+      - './:/application' # Mapeie o código-fonte para o contêiner
+    depends_on:
+      - laucher-queue
+      - rabbitmq-master # Certifique-se de que o RabbitMQ esteja disponível antes de iniciar o worker
+    deploy:
+      replicas: 2 # Número inicial de réplicas
+    networks:
+      - bames_network
+
+  worker-notificar-compromisso:
+    build: ./docker/php-fpm # Use o Dockerfile para construir a imagem
+    command: php src/Infraestrutura/Workers/NotificarCompromisso/Worker.php # Comando para iniciar o worker
+    volumes:
+      - './:/application' # Mapeie o código-fonte para o contêiner
+    depends_on:
+      - laucher-queue
+      - rabbitmq-master # Certifique-se de que o RabbitMQ esteja disponível antes de iniciar o worker
+    deploy:
+      replicas: 2 # Número inicial de réplicas
+    networks:
+      - bames_network
+
+  rabbitmq-master:
+    image: rabbitmq:3.8-management-alpine
+    hostname: rabbitmq-master
+    restart: unless-stopped
+    ports:
+      - "1${EVENT_BUS_PORT}:1${EVENT_BUS_PORT}"
+      - "${EVENT_BUS_PORT}:${EVENT_BUS_PORT}"
+      - "15692:15692"
+    volumes:
+      - './docker/rabbitmq:/var/lib/rabbitmq'
+    networks:
+      - bames_network
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+
+  rabbitmq-slave:
+    image: rabbitmq:3.8-management-alpine
+    hostname: rabbitmq-slave
+    restart: unless-stopped
+    volumes:
+      - './docker/rabbitmq:/var/lib/rabbitmq'
+    networks:
+      - bames_network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "localhost", "${EVENT_BUS_PORT}" ]
+      interval: 5s
+      timeout: 15s
+      retries: 1
+    deploy:
+      replicas: 2
+      placement:
+        constraints:
+          - node.role == worker
+  # worker-email:
+  #   build: ./docker/php-fpm # Use o Dockerfile para construir a imagem
+  #   command: php src/Infra/Services/EmailService.php # Comando para iniciar o worker
+  #   volumes:
+  #     - './:/application' # Mapeie o código-fonte para o contêiner
+  #   depends_on:
+  #     - rabbitmq-master # Certifique-se de que o RabbitMQ esteja disponível antes de iniciar o worker
+  #   deploy:
+  #     replicas: 1 # Número inicial de réplicas
+  #   networks:
+  #     - bames_network
+
+  # worker-billing:
+  #   build: ./docker/php-fpm # Use o Dockerfile para construir a imagem
+  #   command: php src/Infra/Services/BillingService.php # Comando para iniciar o worker
+  #   volumes:
+  #     - './:/application' # Mapeie o código-fonte para o contêiner
+  #   depends_on:
+  #     - rabbitmq-master # Certifique-se de que o RabbitMQ esteja disponível antes de iniciar o worker
+  #   deploy:
+  #     replicas: 1 # Número inicial de réplicas
+  #   networks:
+  #     - bames_network
+
+  # worker-nfse:
+  #   build: ./docker/php-fpm # Use o Dockerfile para construir a imagem
+  #   command: php src/Infra/Services/NFSeService.php # Comando para iniciar o worker
+  #   volumes:
+  #     - './:/application' # Mapeie o código-fonte para o contêiner
+  #   depends_on:
+  #     - rabbitmq-master # Certifique-se de que o RabbitMQ esteja disponível antes de iniciar o worker
+  #   deploy:
+  #     replicas: 1 # Número inicial de réplicas
+  #   networks:
+  #     - bames_network
+
+  # rabbitmq-master:
+  #   image: rabbitmq:3.8-management-alpine
+  #   hostname: rabbitmq-master
+  #   restart: unless-stopped
+  #   ports:
+  #     - "1${EVENT_BUS_PORT}:1${EVENT_BUS_PORT}"
+  #     - "${EVENT_BUS_PORT}:${EVENT_BUS_PORT}"
+  #   volumes:
+  #     - './docker/rabbitmq:/var/lib/rabbitmq'
+  #   networks:
+  #     - bames_network
+  #   deploy:
+  #     replicas: 1
+  #     placement:
+  #       constraints:
+  #         - node.role == manager
+    
+
+networks:
+  bames_network:
