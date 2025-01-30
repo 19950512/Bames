@@ -14,6 +14,10 @@ enum CanalDeTexto: string
 
     case Workers = 'Workers';
 
+    case Atendimentos = 'Atendimentos';
+    
+    case Contratos = 'Contratos';
+
     case ConsultarProcessosPorOAB = 'ConsultarProcessosPorOAB';
 
     case ConsultarProcessosPorDocumento = 'ConsultarProcessosPorDocumento';
@@ -45,6 +49,7 @@ enum CanalDeTexto: string
 
     public function obterURL(): string
     {
+
         $pathWebhooks = __DIR__.'/../../Credenciais/url_webhooks_discord.php';
         if(!is_file($pathWebhooks)){
             throw new Exception('Arquivo de URLs de Webhook do Discord não encontrado');
@@ -72,6 +77,8 @@ enum CanalDeTexto: string
             self::DocxToPDF => $urls['DocxToPDF'],
             self::Workers => $urls['Workers'],
             self::NotificarAgenda => $urls['NotificarAgenda'],
+            self::Atendimentos => $urls['Atendimentos'],
+            self::Contratos => $urls['Contratos'],
         };
     }
 }

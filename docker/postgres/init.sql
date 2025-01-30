@@ -144,6 +144,43 @@ CREATE TABLE IF NOT EXISTS auth_jwtokens
     CONSTRAINT auth_jwtokens_pkey PRIMARY KEY (codigo)
 );
 
+CREATE TABLE IF NOT EXISTS contratos
+(
+    codigo serial NOT NULL,
+    business_id character varying NOT NULL,
+    contrato_id character varying COLLATE pg_catalog."default" NOT NULL,
+    cliente_id character varying COLLATE pg_catalog."default" NOT NULL,
+    conta_bancaria_id character varying COLLATE pg_catalog."default" NOT NULL,
+    contrato_status character varying COLLATE pg_catalog."default",
+    contrato_recorrente boolean NOT NULL DEFAULT false,
+    contrato_data_inicio DATE,
+    contrato_meio_de_pagamento character varying COLLATE pg_catalog."default",
+    contrato_dia_emissao_cobranca integer,
+    contrato_dia_vencimento integer,
+    contrato_valor DECIMAL,
+    contrato_multa DECIMAL,
+    contrato_juros DECIMAL,
+    contrato_horario_emissao_cobranca_hora integer,
+    contrato_horario_emissao_cobranca_minuto integer,
+    contrato_parcelas integer NOT NULL DEFAULT 1,
+    contrato_valor_desconto_antecipacao DECIMAL,
+    contrato_tipo_desconto character varying COLLATE pg_catalog."default",
+    contrato_tipo_juros character varying COLLATE pg_catalog."default",
+    contrato_tipo_multa character varying COLLATE pg_catalog."default",
+    autodata timestamp with time zone NOT NULL DEFAULT now(),
+    CONSTRAINT contratos_pkey PRIMARY KEY (codigo)
+);
+
+CREATE TABLE IF NOT EXISTS contratos_eventos
+(
+    codigo serial NOT NULL,
+    business_id character varying NOT NULL,
+    contrato_id character varying COLLATE pg_catalog."default" NOT NULL,
+    evento_momento character varying COLLATE pg_catalog."default" NOT NULL,
+    evento_descricao character varying COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT contratos_eventos_pkey PRIMARY KEY (codigo)
+);
+
 CREATE TABLE IF NOT EXISTS cobrancas
 (
     codigo serial NOT NULL,

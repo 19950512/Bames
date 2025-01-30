@@ -84,6 +84,10 @@ jobs:
             git restore .  # Desfaz alterações locais não comitadas
             git pull origin main  # Puxa as últimas atualizações do repositório
             composer update --no-progress --prefer-dist
+
+            # Roda as migrations
+            php vendor/bin/phinx migrate -e production
+
             docker compose -f ${{ secrets.DOCKER_COMPOSE_FILE }} up -d --build
           EOF
         if: success()

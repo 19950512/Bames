@@ -32,7 +32,8 @@
         "team-reflex/discord-php": "^7.3",
         "aws/aws-sdk-php": "^3.324",
         "phpoffice/phpword": "^1.3",
-        "ext-zip": "*"
+        "ext-zip": "*",
+        "robmorgan/phinx": "^0.16.6"
     },
     "config": {
         "platform": {
